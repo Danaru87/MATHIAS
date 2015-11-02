@@ -95,6 +95,10 @@
       <Project>{939ddfc7-d6ec-483a-b607-479eb1afe641}</Project>
       <Name>DataProvider</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MathiasModels\MathiasModels.csproj">
+      <Project>{3e244987-fe3d-4d49-8e27-51f26023dc0d}</Project>
+      <Name>MathiasModels</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

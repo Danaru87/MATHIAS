@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Globalization;
 using System.Threading;
+using MathiasModels;
+using DataProvider;
 
 namespace MATHIAS_beta
 {
@@ -41,6 +43,14 @@ namespace MATHIAS_beta
             kinect = KinectSensor.GetDefault();
             
             ri = TryGetKinectRecognizer();
+           
+            label1.Text = "Récupération du dictionnaire Français";
+
+            using (WordRetriever retriever = new WordRetriever())
+            {
+                List<Word> Dictionnary = retriever.GetFullList();
+            }
+
 
             ListenKinect();
             

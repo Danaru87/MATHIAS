@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MATHIAS_beta", "MATHIAS_bet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataProvider", "DataProvider\DataProvider.csproj", "{939DDFC7-D6EC-483A-B607-479EB1AFE641}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathiasModels", "MathiasModels\MathiasModels.csproj", "{3E244987-FE3D-4D49-8E27-51F26023DC0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{939DDFC7-D6EC-483A-B607-479EB1AFE641}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{939DDFC7-D6EC-483A-B607-479EB1AFE641}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{939DDFC7-D6EC-483A-B607-479EB1AFE641}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E244987-FE3D-4D49-8E27-51F26023DC0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E244987-FE3D-4D49-8E27-51F26023DC0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E244987-FE3D-4D49-8E27-51F26023DC0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E244987-FE3D-4D49-8E27-51F26023DC0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

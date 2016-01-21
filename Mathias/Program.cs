@@ -12,6 +12,7 @@ using mathiasCore;
 using System.Runtime.InteropServices;
 using System.Data.SQLite;
 using Dapper;
+using mathiasModels;
 
 namespace Mathias
 {
@@ -21,6 +22,7 @@ namespace Mathias
         static KinectAudioStream convertStream;
         static SpeechRecognitionEngine speechEngine;
         static SpeechSynthesizer speaker;
+        static bool active;
 
         public static string DBPATH { get; private set; }
         public static object DBFILE { get; private set; }
@@ -31,11 +33,16 @@ namespace Mathias
         {
             Console.WriteLine("Bienvenu dans Mathias");
             RUNNING = true;
+            active = true;
             Init();
 
             Console.WriteLine("Initialisation de la Kinect");
             speaker = new SpeechSynthesizer();
-            speaker.Speak("Demarrage en cours");
+            //speaker.SelectVoice(
+            List<InstalledVoice> voices = speaker.GetInstalledVoices().ToList(); ;
+            Console.WriteLine(speaker.Voice.Name);
+
+            speaker.Speak("Démarrage en cours");
             kinectSensor = KinectSensor.GetDefault();
             if(kinectSensor != null)
             {
@@ -61,16 +68,7 @@ namespace Mathias
             {
                 Console.WriteLine("Construction du grammar sample");
                 speechEngine = new SpeechRecognitionEngine(ri.Id);
-                var commands = new Choices();
-                commands.Add(new SemanticResultValue("Bonjour", "HELLO"));
-                commands.Add(new SemanticResultValue("Salut", "HELLO"));
-                commands.Add(new SemanticResultValue("Coucou", "HELLO"));
-                commands.Add(new SemanticResultValue("Tu vas bien", "demande"));
-                commands.Add(new SemanticResultValue("Maxime", "roux"));
-                commands.Add(new SemanticResultValue("Fermeture de mathias", "EXIT"));
-                var gb = new GrammarBuilder { Culture = ri.Culture };
-                gb.Append(commands);
-                var g = new Grammar(gb);
+                var g = GetGrammar(ri);
                 Console.WriteLine("Construction du grammar terminée");
                 speechEngine.LoadGrammar(g);
                 speechEngine.SpeechRecognized += SpeechRecognized;
@@ -98,29 +96,48 @@ namespace Mathias
 
         private static void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            const double ConfidenceThreshold = 0.9;
+            const double ConfidenceThreshold = 0.75;
 
             if(e.Result.Confidence >= ConfidenceThreshold)
             {
-                switch(e.Result.Semantics.Value.ToString())
+                if (active)
                 {
-                    case "HELLO":
-                        speaker.Speak("Bonjour copain !");
-                        Console.WriteLine("Bonjour à vous !");
-                        break;
-                    case "demande":
-                        speaker.Speak("Oui, et toi ?");
-                        Console.WriteLine("Oui et toi ?");
-                        break;
-                    case "roux":
-                        speaker.Speak("Roux, Juif, et pédophile...");
-                        Console.WriteLine("Roux...");
-                        break;
-                    case "EXIT":
-                        speaker.Speak("A bientôt !");
-                        Console.WriteLine("ADIOS!");
-                        RUNNING = false;
-                        break;
+                    switch (e.Result.Semantics.Value.ToString())
+                    {
+                        case "HELLO":
+                            speaker.Speak("Bonjour copain !");
+                            Console.WriteLine("Bonjour à vous !");
+                            break;
+                        case "demande":
+                            speaker.Speak("Oui, et toi ?");
+                            Console.WriteLine("Oui et toi ?");
+                            break;
+                        case "roux":
+                            speaker.Speak("Roux, Juif, et pédophile...");
+                            Console.WriteLine("Roux...");
+                            break;
+                        case "EXIT":
+                            speaker.Speak("A bientôt !");
+                            Console.WriteLine("ADIOS!");
+                            RUNNING = false;
+                            break;
+                        case "OFF":
+                            speaker.Speak("Mis en veille activée");
+                            Console.WriteLine("Mise en veille");
+                            active = false;
+                            break;
+                    }
+                }
+                else
+                {
+                    switch(e.Result.Semantics.Value.ToString())
+                    {
+                        case "ON":
+                            speaker.Speak("Réveil en cours");
+                            speaker.Speak("Je suis prêt à vous obéir");
+                            active = true;
+                            break;
+                    }
                 }
                 
             }
@@ -169,13 +186,14 @@ namespace Mathias
             if (!File.Exists(String.Format(DBPATH + "\\{0}", DBFILE)))
             {
                 needInstall = true;
-                File.Create(String.Format(DBPATH + "\\{0}", DBFILE));
+                SQLiteConnection.CreateFile(String.Format(DBPATH + "\\{0}", DBFILE));
                 Console.WriteLine("Création du fichier " + String.Format(DBPATH + "\\{0}", DBFILE));
             }
             Console.WriteLine("Fichier de base de donnée vérifié");
             SQLCHAIN = String.Format("Data Source = {0}; Version = 3;", String.Format(DBPATH + "\\{0}", DBFILE));
             Console.WriteLine("Chaine de connection crée: " + SQLCHAIN);
-            if(needInstall) CreateDatabase();
+            System.Threading.Thread.Sleep(1000);
+            CreateDatabase();
         }
 
         private static void CreateDatabase()
@@ -204,6 +222,24 @@ namespace Mathias
                     Console.WriteLine("Exception: " + e.Message);
                 }
             }
+        }
+
+        private static Grammar GetGrammar(RecognizerInfo ri)
+        {
+            var commands = new Choices();
+            using (SQLiteConnection sqlite = new SQLiteConnection(SQLCHAIN))
+            {
+                List<SENTENCES> sentence = sqlite.Query<SENTENCES>("SELECT * from SENTENCES").ToList();
+                foreach (SENTENCES sen in sentence)
+                {
+                    sen.CMD = sqlite.Query<COMMANDS>(String.Format("SELECT * FROM COMMANDS where COMMANDS.ID in (select CMDID from TRIGGERCMD where SENID = {0})", sen.SENID)).Single();
+                    commands.Add(new SemanticResultValue(sen.SENTENCE, sen.CMD.CMD));
+                }
+            }
+            var gb = new GrammarBuilder { Culture = ri.Culture };
+            gb.Append(commands);
+            var g = new Grammar(gb);
+            return g;
         }
 
     }

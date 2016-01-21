@@ -1,0 +1,5 @@
+﻿CREATE TABLE SENTENCES ( SENID INTEGER PRIMARY KEY AUTOINCREMENT, SENTENCE TEXT NOT NULL
+);
+
+INSERT INTO SENTENCES (SENTENCE) VALUES ('Bonjour'), ('Salut'), ('Coucou'), ('Bonjour mathias');
+INSERT INTO SENTENCES (SENTENCE) VALUES ('Fermeture'), ('Bonne nuit'), ('Fermeture de mathias');

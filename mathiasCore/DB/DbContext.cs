@@ -19,10 +19,10 @@
 //            DBPATH = String.Format("{0}\\database", Directory.GetCurrentDirectory());
 //            DBFILE = "mathias.db";
 //            Init();
-            
+
 //            CLIENT = new SQLiteConnection(String.Format("Data Source = {0}\\{1}; Version = 3;", DBPATH, DBFILE));
 //        }
 
-        
+
 //    }
 //}

@@ -44,6 +44,10 @@
       <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Speech, Version=11.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Speech\v11.0\Assembly\Microsoft.Speech.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -67,36 +71,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DB\DbContext.cs" />
+    <Compile Include="DB\DBContext.cs" />
+    <Compile Include="DB\DBManager.cs" />
+    <Compile Include="GlobalManager.cs" />
     <Compile Include="Kinect\KinectAudioStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\CMDUSE.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\Commands.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\METHODS.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\MODULE.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\Sentences.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\TriggerCmd.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="Scripts\DbInstall.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\mathiasModels\mathiasModels.csproj">
+      <Project>{3abb7916-c922-4925-95c2-3a083dc4e1c6}</Project>
+      <Name>mathiasModels</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.99.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.99.0\build\net451\System.Data.SQLite.Core.targets')" />

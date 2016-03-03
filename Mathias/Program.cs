@@ -3,16 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Speech.Synthesis;
 using Microsoft.Speech.AudioFormat;
 using Microsoft.Speech.Recognition;
 using mathiasCore;
 using System.Runtime.InteropServices;
-using System.Data.SQLite;
-using Dapper;
-using mathiasModels;
+using mathiasCore.DB;
+using AE.Net.Mail;
 
 namespace Mathias
 {
@@ -26,7 +23,6 @@ namespace Mathias
 
         public static string DBPATH { get; private set; }
         public static object DBFILE { get; private set; }
-        public static string SQLCHAIN { get; private set; }
         public static bool RUNNING { get; private set; }
 
         static void Main(string[] args)
@@ -34,11 +30,11 @@ namespace Mathias
             Console.WriteLine("Bienvenu dans Mathias");
             RUNNING = true;
             active = true;
-            Init();
+            GlobalManager.InitMathias();
 
             Console.WriteLine("Initialisation de la Kinect");
             speaker = new SpeechSynthesizer();
-            //speaker.SelectVoice(
+
             List<InstalledVoice> voices = speaker.GetInstalledVoices().ToList(); ;
             Console.WriteLine(speaker.Voice.Name);
 
@@ -91,12 +87,19 @@ namespace Mathias
 
         private static void SpeechRejected(object sender, SpeechRecognitionRejectedEventArgs e)
         {
-            Console.WriteLine("Aucune phrase reconnue");
+            if (active)
+            {
+                Console.WriteLine("Aucune phrase reconnue");
+                            speaker.Speak("Je n'ai pas reconnu votre phrase");
+                            System.Threading.Thread.Sleep(4000);
+            }
+            
         }
 
         private static void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            const double ConfidenceThreshold = 0.75;
+
+            const double ConfidenceThreshold = 0.50;
 
             if(e.Result.Confidence >= ConfidenceThreshold)
             {
@@ -108,13 +111,18 @@ namespace Mathias
                             speaker.Speak("Bonjour copain !");
                             Console.WriteLine("Bonjour à vous !");
                             break;
-                        case "demande":
+                        case "HUMEUR":
                             speaker.Speak("Oui, et toi ?");
                             Console.WriteLine("Oui et toi ?");
                             break;
                         case "roux":
                             speaker.Speak("Roux, Juif, et pédophile...");
                             Console.WriteLine("Roux...");
+                            break;
+                        case "READ EMAIL":
+                            speaker.Speak("Chargement de l'email");
+                            string email = GetEmail("","");
+                            speaker.Speak(email);//TODO: Appeler méthode de lecture
                             break;
                         case "EXIT":
                             speaker.Speak("A bientôt !");
@@ -139,10 +147,30 @@ namespace Mathias
                             break;
                     }
                 }
+                System.Threading.Thread.Sleep(4000);
                 
             }
+        }
+
+        private static string GetEmail(string v1, string v2)
+        {
+            ImapClient client = new ImapClient("imap.openmailbox.org", v1, v2, AuthMethods.Login, 993, true);
+
+            client.SelectMailbox("INBOX");
+
+            MailMessage[] listemail = client.GetMessages(0,20);
+            MailMessage email = listemail[12];
+            if(String.IsNullOrEmpty(email.Body))
+            {
+                string body = client.GetMessage(email.Uid).Subject;
+                client.Dispose();
+                return body;
+            }
+            client.Dispose();
+            return email.Subject;
             
         }
+
         private static RecognizerInfo TryGetKinectRecognizer()
         {
             IEnumerable<RecognizerInfo> recognizers;
@@ -170,73 +198,11 @@ namespace Mathias
             return null;
         }
 
-        private static void Init()
-        {
-            Console.WriteLine("Verification des fichiers en cours...");
-            DBPATH = String.Format("{0}\\database", Directory.GetCurrentDirectory());
-            DBFILE = "mathias.sqlite";
-            bool needInstall = false;
-            if (!Directory.Exists(DBPATH))
-            {
-                needInstall = true;
-                Directory.CreateDirectory(DBPATH);
-                Console.WriteLine("Création du dossier " + DBPATH);
-            }
-            Console.WriteLine("Dossier de base de donnée vérifié");
-            if (!File.Exists(String.Format(DBPATH + "\\{0}", DBFILE)))
-            {
-                needInstall = true;
-                SQLiteConnection.CreateFile(String.Format(DBPATH + "\\{0}", DBFILE));
-                Console.WriteLine("Création du fichier " + String.Format(DBPATH + "\\{0}", DBFILE));
-            }
-            Console.WriteLine("Fichier de base de donnée vérifié");
-            SQLCHAIN = String.Format("Data Source = {0}; Version = 3;", String.Format(DBPATH + "\\{0}", DBFILE));
-            Console.WriteLine("Chaine de connection crée: " + SQLCHAIN);
-            System.Threading.Thread.Sleep(1000);
-            CreateDatabase();
-        }
-
-        private static void CreateDatabase()
-        {
-            String iniPath = Path.Combine(Directory.GetCurrentDirectory().ToString(), "Scripts\\DbInstall.ini");
-            StreamReader file = new StreamReader(iniPath);
-            string line;
-            while((line = file.ReadLine()) != null)
-            {
-                try
-                {
-                    string Queries = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), String.Format("Scripts\\{0}", line)));
-                    Queries = Queries.Replace("\n", "");
-                    Queries = Queries.Replace("\r", "");
-                    Queries = Queries.Replace("\t", " ");
-                    using (SQLiteConnection sqlite = new SQLiteConnection(SQLCHAIN))
-                    {
-                        sqlite.Open();
-                        sqlite.Execute(Queries);
-                        sqlite.Close();
-                    }
-                        Console.WriteLine(Queries);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Exception: " + e.Message);
-                }
-            }
-        }
-
         private static Grammar GetGrammar(RecognizerInfo ri)
         {
-            var commands = new Choices();
-            using (SQLiteConnection sqlite = new SQLiteConnection(SQLCHAIN))
-            {
-                List<SENTENCES> sentence = sqlite.Query<SENTENCES>("SELECT * from SENTENCES").ToList();
-                foreach (SENTENCES sen in sentence)
-                {
-                    sen.CMD = sqlite.Query<COMMANDS>(String.Format("SELECT * FROM COMMANDS where COMMANDS.ID in (select CMDID from TRIGGERCMD where SENID = {0})", sen.SENID)).Single();
-                    commands.Add(new SemanticResultValue(sen.SENTENCE, sen.CMD.CMD));
-                }
-            }
             var gb = new GrammarBuilder { Culture = ri.Culture };
+            Choices commands;
+            commands = DBContext.GetGrammar();
             gb.Append(commands);
             var g = new Grammar(gb);
             return g;

@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mathiasCore", "mathiasCore\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mathiasModels", "mathiasModels\mathiasModels.csproj", "{3ABB7916-C922-4925-95C2-3A083DC4E1C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailPlug", "EmailPlug\EmailPlug.csproj", "{51E45AF2-B055-4E2E-85F0-BDA9E9162934}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{86531390-E23E-44EE-8207-1DC7E770CE55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{3ABB7916-C922-4925-95C2-3A083DC4E1C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ABB7916-C922-4925-95C2-3A083DC4E1C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ABB7916-C922-4925-95C2-3A083DC4E1C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51E45AF2-B055-4E2E-85F0-BDA9E9162934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51E45AF2-B055-4E2E-85F0-BDA9E9162934}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51E45AF2-B055-4E2E-85F0-BDA9E9162934}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51E45AF2-B055-4E2E-85F0-BDA9E9162934}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86531390-E23E-44EE-8207-1DC7E770CE55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86531390-E23E-44EE-8207-1DC7E770CE55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86531390-E23E-44EE-8207-1DC7E770CE55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86531390-E23E-44EE-8207-1DC7E770CE55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

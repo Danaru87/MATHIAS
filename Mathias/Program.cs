@@ -91,7 +91,7 @@ namespace Mathias
             {
                 Console.WriteLine("Aucune phrase reconnue");
                             speaker.Speak("Je n'ai pas reconnu votre phrase");
-                            System.Threading.Thread.Sleep(4000);
+                            System.Threading.Thread.Sleep(1000);
             }
             
         }
@@ -99,7 +99,7 @@ namespace Mathias
         private static void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
 
-            const double ConfidenceThreshold = 0.50;
+            const double ConfidenceThreshold = 0.75;
 
             if(e.Result.Confidence >= ConfidenceThreshold)
             {
@@ -120,8 +120,8 @@ namespace Mathias
                             Console.WriteLine("Roux...");
                             break;
                         case "READ EMAIL":
-                            speaker.Speak("Chargement de l'email");
-                            string email = GetEmail("","");
+                            speaker.Speak("Chargement du message");
+                            string email = GetEmail("arnaud.dasilva@openmailbox.org","wakete86");
                             speaker.Speak(email);//TODO: Appeler méthode de lecture
                             break;
                         case "EXIT":
@@ -147,7 +147,7 @@ namespace Mathias
                             break;
                     }
                 }
-                System.Threading.Thread.Sleep(4000);
+                System.Threading.Thread.Sleep(1000);
                 
             }
         }

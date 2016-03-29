@@ -13,5 +13,9 @@ namespace EmailPlug
         public Dictionary<String, String> CFG { get; set; }
 
         public abstract PlugResponse DoAction(PlugCall Call);
+
+        public abstract void Install();
+
+        public abstract void Init();
     }
 }

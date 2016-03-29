@@ -75,6 +75,7 @@
     <Compile Include="DB\DBManager.cs" />
     <Compile Include="GlobalManager.cs" />
     <Compile Include="Kinect\KinectAudioStream.cs" />
+    <Compile Include="MCORE.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

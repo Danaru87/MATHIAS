@@ -20,6 +20,7 @@ namespace Mathias
         static SpeechRecognitionEngine speechEngine;
         static SpeechSynthesizer speaker;
         static bool active;
+        static String DefaultContext = "General";
 
         public static string DBPATH { get; private set; }
         public static object DBFILE { get; private set; }
@@ -57,16 +58,15 @@ namespace Mathias
             }
             else { Console.WriteLine("Impossible de récupérer la kinect"); }
 
-            RecognizerInfo ri = TryGetKinectRecognizer();
-            Console.WriteLine(ri.Name + "Récupéré");
+            
+            Console.WriteLine(GlobalManager.RI.Name + "Récupéré");
 
-            if (ri != null)
+            if (GlobalManager.RI != null)
             {
                 Console.WriteLine("Construction du grammar sample");
-                speechEngine = new SpeechRecognitionEngine(ri.Id);
-                var g = GetGrammar(ri);
+                speechEngine = new SpeechRecognitionEngine(GlobalManager.RI.Id);
                 Console.WriteLine("Construction du grammar terminée");
-                speechEngine.LoadGrammar(g);
+                speechEngine.LoadGrammar(GlobalManager.GRAMMAR);
                 speechEngine.SpeechRecognized += SpeechRecognized;
                 speechEngine.SpeechRecognitionRejected += SpeechRejected;
 
@@ -105,7 +105,7 @@ namespace Mathias
             {
                 if (active)
                 {
-                    
+                    //Fire(e.Result.Semantics.Value.ToString());
                     switch (e.Result.Semantics.Value.ToString())
                     {
                         case "HELLO":
@@ -153,6 +153,18 @@ namespace Mathias
             }
         }
 
+        private static void Fire(string v)
+        {
+            // Todo: recherche une correspondance dans la BDD
+            // Si correspondance trouvée:*
+                // Chargement de la DLL concernée
+                // Création de l'objet PlugCall
+                // Lancement de la méthode concernée
+            // Si non
+                // Indiquer aucune commande correspondante.
+            throw new NotImplementedException();
+        }
+
         private static string GetEmail(string v1, string v2)
         {
             ImapClient client = new ImapClient("imap.openmailbox.org", v1, v2, AuthMethods.Login, 993, true);
@@ -171,43 +183,5 @@ namespace Mathias
             return email.Subject;
             
         }
-
-        private static RecognizerInfo TryGetKinectRecognizer()
-        {
-            IEnumerable<RecognizerInfo> recognizers;
-
-            try
-            {
-                recognizers = SpeechRecognitionEngine.InstalledRecognizers();
-
-
-            }
-            catch(COMException)
-            {
-                return null;
-            }
-
-            foreach(RecognizerInfo recognizer in recognizers)
-            {
-                string value;
-                recognizer.AdditionalInfo.TryGetValue("Kinect", out value);
-                if("True".Equals(value, StringComparison.OrdinalIgnoreCase) && "fr-FR".Equals(recognizer.Culture.Name, StringComparison.OrdinalIgnoreCase))
-                {
-                    return recognizer;
-                }
-            }
-            return null;
-        }
-
-        private static Grammar GetGrammar(RecognizerInfo ri)
-        {
-            var gb = new GrammarBuilder { Culture = ri.Culture };
-            Choices commands;
-            commands = DBContext.GetGrammar();
-            gb.Append(commands);
-            var g = new Grammar(gb);
-            return g;
-        }
-
     }
 }

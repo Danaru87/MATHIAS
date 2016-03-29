@@ -1,7 +1,9 @@
-﻿namespace EmailPlug
+﻿using mathiasModels.Xtend;
+
+namespace EmailPlug
 {
     public interface IPlugin
     {
-        string DoAction(string ActionName);
+        PlugResponse DoAction(PlugCall Call);
     }
 }

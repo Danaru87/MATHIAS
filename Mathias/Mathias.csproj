@@ -107,15 +107,10 @@
     <Folder Include="database\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\CMDUSE.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Scripts\Commands.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\METHODS.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Scripts\CONTEXT.sql" />
     <Content Include="Scripts\MODULE.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

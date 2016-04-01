@@ -10,6 +10,7 @@ using mathiasCore;
 using System.Runtime.InteropServices;
 using mathiasCore.DB;
 using AE.Net.Mail;
+using mathiasModels.Xtend;
 
 namespace Mathias
 {
@@ -66,7 +67,7 @@ namespace Mathias
                 Console.WriteLine("Construction du grammar sample");
                 speechEngine = new SpeechRecognitionEngine(GlobalManager.RI.Id);
                 Console.WriteLine("Construction du grammar terminée");
-                speechEngine.LoadGrammar(GlobalManager.GRAMMAR);
+                speechEngine.LoadGrammar((Grammar)GlobalManager.CONTEXT.GRAMMAR);
                 speechEngine.SpeechRecognized += SpeechRecognized;
                 speechEngine.SpeechRecognitionRejected += SpeechRejected;
 
@@ -99,43 +100,47 @@ namespace Mathias
         private static void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
 
-            const double ConfidenceThreshold = 0.75;
+            const double ConfidenceThreshold = 0.95;
 
             if(e.Result.Confidence >= ConfidenceThreshold)
             {
                 if (active)
                 {
-                    //Fire(e.Result.Semantics.Value.ToString());
-                    switch (e.Result.Semantics.Value.ToString())
+                    Console.WriteLine("Phrase reconnue: " + e.Result.Text);
+                    PlugResponse response = GlobalManager.FireAction(e.Result.Semantics.Value.ToString(), e.Result.Text);
+                    speaker.Speak(response.Response);
+                    
+                    if(response.WaitForChainedAction)
                     {
-                        case "HELLO":
-                            speaker.Speak("Bonjour copain !");
-                            Console.WriteLine("Bonjour à vous !");
-                            break;
-                        case "HUMEUR":
-                            speaker.Speak("Oui, et toi ?");
-                            Console.WriteLine("Oui et toi ?");
-                            break;
-                        case "roux":
-                            speaker.Speak("Roux, Juif, et pédophile...");
-                            Console.WriteLine("Roux...");
-                            break;
-                        case "READ EMAIL":
-                            speaker.Speak("Chargement du message");
-                            string email = GetEmail("arnaud.dasilva@openmailbox.org","wakete86");
-                            speaker.Speak(email);//TODO: Appeler méthode de lecture
-                            break;
-                        case "EXIT":
-                            speaker.Speak("A bientôt !");
-                            Console.WriteLine("ADIOS!");
-                            RUNNING = false;
-                            break;
-                        case "OFF":
-                            speaker.Speak("Mis en veille activée");
-                            Console.WriteLine("Mise en veille");
-                            active = false;
-                            break;
+                        speaker.Speak(response.ChainedQuestion);
                     }
+
+                    //switch (e.Result.Semantics.Value.ToString())
+                    //{
+                    //    case "HUMEUR":
+                    //        speaker.Speak("Oui, et toi ?");
+                    //        Console.WriteLine("Oui et toi ?");
+                    //        break;
+                    //    case "roux":
+                    //        speaker.Speak("Roux, Juif, et pédophile...");
+                    //        Console.WriteLine("Roux...");
+                    //        break;
+                    //    case "READ EMAIL":
+                    //        speaker.Speak("Chargement du message");
+                    //        string email = GetEmail("arnaud.dasilva@openmailbox.org","wakete86");
+                    //        speaker.Speak(email);//TODO: Appeler méthode de lecture
+                    //        break;
+                    //    case "EXIT":
+                    //        speaker.Speak("A bientôt !");
+                    //        Console.WriteLine("ADIOS!");
+                    //        RUNNING = false;
+                    //        break;
+                    //    case "OFF":
+                    //        speaker.Speak("Mis en veille activée");
+                    //        Console.WriteLine("Mise en veille");
+                    //        active = false;
+                    //        break;
+                    //}
                 }
                 else
                 {
@@ -148,21 +153,9 @@ namespace Mathias
                             break;
                     }
                 }
-                System.Threading.Thread.Sleep(1000);
+                //System.Threading.Thread.Sleep(1000);
                 
             }
-        }
-
-        private static void Fire(string v)
-        {
-            // Todo: recherche une correspondance dans la BDD
-            // Si correspondance trouvée:*
-                // Chargement de la DLL concernée
-                // Création de l'objet PlugCall
-                // Lancement de la méthode concernée
-            // Si non
-                // Indiquer aucune commande correspondante.
-            throw new NotImplementedException();
         }
 
         private static string GetEmail(string v1, string v2)

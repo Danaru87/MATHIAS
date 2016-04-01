@@ -9,9 +9,8 @@ namespace mathiasModels
     public class COMMANDS
     {
         public int ID { get; set; }
-        public List<SENTENCES> SENTENCESLIST { get; set; }
         public String CMD { get; set; }
-        private METHODS METHOD { get; set; }
-        private MODULES MODULE { get; set; } 
+        private String MODULENAME { get; set; }
+        public MODULES MODULE { get; set; } 
     }
 }

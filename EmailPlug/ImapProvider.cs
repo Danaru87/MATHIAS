@@ -64,5 +64,15 @@ namespace EmailPlug
                         return new PlugResponse() { Response = "Je ne peux pas traiter votre demande" };
                 }
         }
+
+        public override void Install()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Init()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

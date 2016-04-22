@@ -29,13 +29,18 @@ namespace mathiasCore.DB
                     Queries = Queries.Replace("\n", "");
                     Queries = Queries.Replace("\r", "");
                     Queries = Queries.Replace("\t", " ");
-                    using (SQLiteConnection sqlite = new SQLiteConnection(GlobalManager.SQLCHAIN))
+                    string[] queriesList = Queries.Split(';');
+                    foreach (String oneQ in queriesList)
                     {
-                        sqlite.Open();
-                        sqlite.Execute(Queries);
-                        sqlite.Close();
+                        using (SQLiteConnection sqlite = new SQLiteConnection(GlobalManager.SQLCHAIN))
+                        {
+                            sqlite.Open();
+                            sqlite.Execute(oneQ);
+                            sqlite.Close();
+                        }
+                        Console.WriteLine(Queries);
                     }
-                    Console.WriteLine(Queries);
+                    
                 }
                 catch (Exception e)
                 {

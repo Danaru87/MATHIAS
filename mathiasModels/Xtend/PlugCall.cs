@@ -9,5 +9,6 @@ namespace mathiasModels.Xtend
     public class PlugCall
     {
         public String ACTION { get; set; }
+        public string Text { get; set; }
     }
 }

@@ -11,5 +11,6 @@ namespace mathiasModels
         public int SENID { get; set; }
         public String SENTENCE { get; set; }
         public COMMANDS CMD {get;set;}
+        public String LANG { get; set; }
     }
 }

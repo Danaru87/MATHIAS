@@ -22,6 +22,7 @@ namespace Mathias
         static SpeechSynthesizer speaker;
         static bool active;
         static String DefaultContext = "General";
+        static string LastAction = "";
 
         public static string DBPATH { get; private set; }
         public static object DBFILE { get; private set; }
@@ -37,7 +38,7 @@ namespace Mathias
             Console.WriteLine("Initialisation de la Kinect");
             speaker = new SpeechSynthesizer();
 
-            List<InstalledVoice> voices = speaker.GetInstalledVoices().ToList(); ;
+            List<InstalledVoice> voices = speaker.GetInstalledVoices().ToList();
             Console.WriteLine(speaker.Voice.Name);
 
             speaker.Speak("Démarrage en cours");
@@ -81,8 +82,14 @@ namespace Mathias
             {
                 Console.WriteLine("Could not find speech recognizer");
             }
-            while(RUNNING)
+
+            while(GlobalManager.RUNNING)
             {
+            }
+
+            if (!GlobalManager.RUNNING)
+            {
+                speaker.Speak("Au revoir");
             }
         }
 
@@ -99,24 +106,46 @@ namespace Mathias
 
         private static void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
+            
 
-            const double ConfidenceThreshold = 0.95;
-
-            if(e.Result.Confidence >= ConfidenceThreshold)
+            const double ConfidenceThreshold = 0.70;
+            
+            if (e.Result.Confidence >= ConfidenceThreshold && !LastAction.Equals(e.Result.Semantics.Value.ToString()))
             {
+                LastAction = e.Result.Semantics.Value.ToString();
+                speechEngine.SpeechRecognized += null;
                 if (active)
                 {
+                    if (GlobalManager.LastResponse != null)
+                    {
+                        if (GlobalManager.LastResponse.NextChainedAction.Equals(e.Result.Semantics.Value.ToString()))
+                        {
+                            Console.WriteLine("Question enchainée: " + GlobalManager.LastResponse.NextChainedAction);
+                            PlugResponse chainedResponse = GlobalManager.FireAction(GlobalManager.LastResponse.NextChainedAction, e.Result.Text);
+                            Console.ReadLine();
+                        }
+                    }
+                    //if (GlobalManager.LastResponse.WaitForChainedAction && GlobalManager.LastResponse.NextChainedAction.Equals(e.Result.Semantics.Value.ToString()))
+                    //{
+                    //    speaker.Speak(GlobalManager.LastResponse.ChainedQuestion);
+                    //    PlugResponse nextResponse = GlobalManager.FireAction(e.Result.Semantics.Value.ToString(), e.Result.Text);
+                    //    speaker.Speak(nextResponse.Response);
+                    //}
+
                     Console.WriteLine("Phrase reconnue: " + e.Result.Text);
                     PlugResponse response = GlobalManager.FireAction(e.Result.Semantics.Value.ToString(), e.Result.Text);
-                    speaker.Speak(response.Response);
-                    
-                    if(response.WaitForChainedAction)
+                    if (!e.Result.Semantics.Value.ToString().Equals("EXIT"))
                     {
-                        speaker.Speak(response.ChainedQuestion);
+                        speaker.Speak(response.Response);
+                        
                     }
 
+                    speechEngine.SpeechRecognized += SpeechRecognized;
                     //switch (e.Result.Semantics.Value.ToString())
                     //{
+                    //    case "HELLO":
+                    //        speaker.Speak("Bonjour Monsieur");
+                    //        break;
                     //    case "HUMEUR":
                     //        speaker.Speak("Oui, et toi ?");
                     //        Console.WriteLine("Oui et toi ?");
@@ -127,7 +156,7 @@ namespace Mathias
                     //        break;
                     //    case "READ EMAIL":
                     //        speaker.Speak("Chargement du message");
-                    //        string email = GetEmail("arnaud.dasilva@openmailbox.org","wakete86");
+                    //        string email = GetEmail("arnaud.dasilva@openmailbox.org", "");
                     //        speaker.Speak(email);//TODO: Appeler méthode de lecture
                     //        break;
                     //    case "EXIT":
@@ -144,6 +173,7 @@ namespace Mathias
                 }
                 else
                 {
+                    
                     switch(e.Result.Semantics.Value.ToString())
                     {
                         case "ON":
@@ -152,9 +182,15 @@ namespace Mathias
                             active = true;
                             break;
                     }
+                    speechEngine.SpeechRecognized += SpeechRecognized;
+
                 }
                 //System.Threading.Thread.Sleep(1000);
                 
+            }
+            else if (LastAction.Equals(e.Result.Semantics.Value.ToString()))
+            {
+                speaker.Speak("Je viens de te répondre...");
             }
         }
 

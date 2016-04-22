@@ -30,6 +30,7 @@ namespace mathiasCore
         #region MATHIAS GLOBAL CONFIG
         public static Dictionary<String, String> CONFIGURATION { get; set; }
         public static Context CONTEXT { get; private set; }
+        public static Boolean RUNNING { get; set; }
         #endregion
 
         #region
@@ -42,6 +43,7 @@ namespace mathiasCore
         /// </summary>
         public static void InitMathias()
         {
+            RUNNING = true;
             ///Vérification de la base de données
             CheckDatabase();
 
@@ -99,7 +101,7 @@ namespace mathiasCore
             // Chargement du GRAMMAR Système
             Choices Choices = new Choices();
             GrammarBuilder Builder = new GrammarBuilder { Culture = RI.Culture };
-            foreach(SENTENCES action in DBContext.GetContext(ContextName).SENTENCESLIST)
+            foreach(SENTENCES action in DBContext.SYSCONTEXT.SENTENCESLIST)
             {
                 Choices.Add(new SemanticResultValue(action.SENTENCE, action.CMD.CMD));
             }
@@ -139,10 +141,10 @@ namespace mathiasCore
         public static PlugResponse FireAction(string ActionName, string sentence)
         {
             PlugResponse response = new PlugResponse();
-            if (LastResponse != null && LastResponse.WaitForChainedAction == true)
-            {
-                Console.WriteLine("Reponse à la question précèdente: " + LastResponse.ChainedQuestion);
-            }
+            PlugCall call = new PlugCall();
+            call.ACTION = ActionName;
+            call.Text = sentence;
+
             SENTENCES tmp = CONTEXT.SENTENCESLIST.Where(t => t.CMD.CMD.Equals(ActionName)).Where(t=>t.SENTENCE.Equals(sentence)).Single();
             // Todo: recherche une correspondance dans la BDD
             if (tmp == null)
@@ -154,8 +156,6 @@ namespace mathiasCore
             {
                 if (tmp.CMD.MODULE.NAME.Equals("SYSTEM"))
                 {
-                    PlugCall call = new PlugCall();
-                    call.ACTION = ActionName;
                     response = SYSMODULE.DoAction(call);
                     LastResponse = response;
                     return response;

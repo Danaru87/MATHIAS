@@ -38,26 +38,13 @@ namespace mathiasCore.DB
 
         public static Context GetContext(string ContextName = null)
         {
-            if (SYSCONTEXT == null)
-            {
-                SYSCONTEXT = new Context();
-                LoadSysContext();
-            }
-
-            if (String.IsNullOrEmpty(ContextName))
-            {
-                return SYSCONTEXT;
-            }
-
-            Context MathiasContext = new Context();
             using (SQLiteConnection sqlite = new SQLiteConnection(GlobalManager.SQLCHAIN))
             {
-                string sql = "select * from SENTENCES INNER JOIN COMMANDS on COMMANDS.ID in (select CMDID from TRIGGERCMD where SENTENCES.SENID = TRIGGERCMD.SENID) AND COMMANDS.MODULENAME = @MODULENAME INNER JOIN MODULES on MODULES.NAME = COMMANDS.MODULENAME";
-                MathiasContext.SENTENCESLIST = sqlite.Query<SENTENCES, COMMANDS, MODULES, SENTENCES>
-                    (sql, (sentence, command, module) => { command.MODULE = module; sentence.CMD = command; return sentence; }, new { MODULENAME = ContextName }).ToList<SENTENCES>();
-                MathiasContext.NAME = ContextName;
+                string sql = "select * from SENTENCES INNER JOIN COMMANDS on COMMANDS.ID in (select CMDID from TRIGGERCMD where SENTENCES.SENID = TRIGGERCMD.SENID) AND INNER JOIN MODULES on MODULES.NAME = COMMANDS.MODULENAME";
+                SYSCONTEXT.SENTENCESLIST = sqlite.Query<SENTENCES, COMMANDS, MODULES, SENTENCES>
+                    (sql, (sentence, command, module) => { command.MODULE = module; sentence.CMD = command; return sentence; }).ToList<SENTENCES>();
             }
-            return MergeContexts(MathiasContext);
+            return SYSCONTEXT;
         }
 
         private static Context MergeContexts(Context mathiasContext)

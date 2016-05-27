@@ -31,6 +31,7 @@ namespace mathiasCore
         public static Dictionary<String, String> CONFIGURATION { get; set; }
         public static Context CONTEXT { get; private set; }
         public static Boolean RUNNING { get; set; }
+        public static Boolean STANDBY { get; set; }
         #endregion
 
         #region
@@ -44,6 +45,7 @@ namespace mathiasCore
         public static void InitMathias()
         {
             RUNNING = true;
+            STANDBY = false;
             ///Vérification de la base de données
             CheckDatabase();
 
@@ -154,14 +156,21 @@ namespace mathiasCore
             
             else
             {
-                if (tmp.CMD.MODULE.NAME.Equals("SYSTEM"))
+                
+                // Chargement de la DLL concernée
+                SENTENCES cmd = GlobalManager.CONTEXT.SENTENCESLIST.Where(t => t.CMD.CMD.Equals(ActionName) && t.SENTENCE.Equals(sentence)).Single();
+                if (cmd.CMD.MODULE.NAME.Equals("SYSTEM"))
                 {
                     response = SYSMODULE.DoAction(call);
                     LastResponse = response;
                     return response;
                 }
-                // Chargement de la DLL concernée
-                var DLL = Assembly.LoadFile("");
+                else
+                {
+                    string DLLPATH = cmd.CMD.MODULE.DLL;
+                    var DLL = Assembly.LoadFile(DLLPATH);
+                }
+                
                 response = new PlugResponse();
                 // LOAD DLL
             }

@@ -67,6 +67,7 @@ namespace EmailPlug
 
         public override void Install()
         {
+            
             throw new NotImplementedException();
         }
 

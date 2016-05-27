@@ -112,64 +112,15 @@ namespace Mathias
             
             if (e.Result.Confidence >= ConfidenceThreshold && !LastAction.Equals(e.Result.Semantics.Value.ToString()))
             {
-                LastAction = e.Result.Semantics.Value.ToString();
-                speechEngine.SpeechRecognized += null;
-                if (active)
+                if (GlobalManager.STANDBY == false)
                 {
-                    if (GlobalManager.LastResponse != null)
-                    {
-                        if (GlobalManager.LastResponse.NextChainedAction.Equals(e.Result.Semantics.Value.ToString()))
-                        {
-                            Console.WriteLine("Question enchainée: " + GlobalManager.LastResponse.NextChainedAction);
-                            PlugResponse chainedResponse = GlobalManager.FireAction(GlobalManager.LastResponse.NextChainedAction, e.Result.Text);
-                            Console.ReadLine();
-                        }
-                    }
-                    //if (GlobalManager.LastResponse.WaitForChainedAction && GlobalManager.LastResponse.NextChainedAction.Equals(e.Result.Semantics.Value.ToString()))
-                    //{
-                    //    speaker.Speak(GlobalManager.LastResponse.ChainedQuestion);
-                    //    PlugResponse nextResponse = GlobalManager.FireAction(e.Result.Semantics.Value.ToString(), e.Result.Text);
-                    //    speaker.Speak(nextResponse.Response);
-                    //}
-
                     Console.WriteLine("Phrase reconnue: " + e.Result.Text);
                     PlugResponse response = GlobalManager.FireAction(e.Result.Semantics.Value.ToString(), e.Result.Text);
                     if (!e.Result.Semantics.Value.ToString().Equals("EXIT"))
                     {
                         speaker.Speak(response.Response);
-                        
+                        System.Threading.Thread.Sleep(1000);
                     }
-
-                    speechEngine.SpeechRecognized += SpeechRecognized;
-                    //switch (e.Result.Semantics.Value.ToString())
-                    //{
-                    //    case "HELLO":
-                    //        speaker.Speak("Bonjour Monsieur");
-                    //        break;
-                    //    case "HUMEUR":
-                    //        speaker.Speak("Oui, et toi ?");
-                    //        Console.WriteLine("Oui et toi ?");
-                    //        break;
-                    //    case "roux":
-                    //        speaker.Speak("Roux, Juif, et pédophile...");
-                    //        Console.WriteLine("Roux...");
-                    //        break;
-                    //    case "READ EMAIL":
-                    //        speaker.Speak("Chargement du message");
-                    //        string email = GetEmail("arnaud.dasilva@openmailbox.org", "");
-                    //        speaker.Speak(email);//TODO: Appeler méthode de lecture
-                    //        break;
-                    //    case "EXIT":
-                    //        speaker.Speak("A bientôt !");
-                    //        Console.WriteLine("ADIOS!");
-                    //        RUNNING = false;
-                    //        break;
-                    //    case "OFF":
-                    //        speaker.Speak("Mis en veille activée");
-                    //        Console.WriteLine("Mise en veille");
-                    //        active = false;
-                    //        break;
-                    //}
                 }
                 else
                 {
@@ -179,10 +130,9 @@ namespace Mathias
                         case "ON":
                             speaker.Speak("Réveil en cours");
                             speaker.Speak("Je suis prêt à vous obéir");
-                            active = true;
+                            GlobalManager.STANDBY = false;
                             break;
                     }
-                    speechEngine.SpeechRecognized += SpeechRecognized;
 
                 }
                 //System.Threading.Thread.Sleep(1000);

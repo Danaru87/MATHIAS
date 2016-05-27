@@ -24,9 +24,20 @@ namespace mathiasCore
                     return ContextChange(call);
                 case "LOAD CONTEXT":
                     return null; //LoadContext(call);
+                case "OFF":
+                    return StandBy(call);
                 default:
                     return null;
             }
+        }
+
+        private static PlugResponse StandBy(PlugCall call)
+        {
+            GlobalManager.STANDBY = true;
+            PlugResponse response = new PlugResponse();
+            response.WaitForChainedAction = false;
+            response.Response = "Mode espion activé";
+            return response;
         }
 
         private static PlugResponse ContextChange(PlugCall call)

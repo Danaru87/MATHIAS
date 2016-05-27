@@ -107,6 +107,7 @@
     <Folder Include="database\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="plugins\TextFile1.txt" />
     <Content Include="Scripts\Commands.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

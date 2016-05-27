@@ -46,6 +46,7 @@
     <Compile Include="MODULES.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SENTENCES.cs" />
+    <Compile Include="Xtend\IPlugin.cs" />
     <Compile Include="Xtend\PlugCall.cs" />
     <Compile Include="Xtend\PlugResponse.cs" />
   </ItemGroup>

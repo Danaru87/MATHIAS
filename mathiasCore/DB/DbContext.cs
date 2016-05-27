@@ -38,11 +38,12 @@ namespace mathiasCore.DB
 
         public static Context GetContext(string ContextName = null)
         {
+            SYSCONTEXT = new Context();
             using (SQLiteConnection sqlite = new SQLiteConnection(GlobalManager.SQLCHAIN))
             {
-                string sql = "select * from SENTENCES INNER JOIN COMMANDS on COMMANDS.ID in (select CMDID from TRIGGERCMD where SENTENCES.SENID = TRIGGERCMD.SENID) AND INNER JOIN MODULES on MODULES.NAME = COMMANDS.MODULENAME";
-                SYSCONTEXT.SENTENCESLIST = sqlite.Query<SENTENCES, COMMANDS, MODULES, SENTENCES>
-                    (sql, (sentence, command, module) => { command.MODULE = module; sentence.CMD = command; return sentence; }).ToList<SENTENCES>();
+                string sql = "select * from SENTENCES INNER JOIN COMMANDS on COMMANDS.ID in (select CMDID from TRIGGERCMD where SENTENCES.SENID = TRIGGERCMD.SENID) INNER JOIN MODULES on MODULES.NAME = COMMANDS.MODULENAME";
+                SYSCONTEXT.SENTENCESLIST = new List<SENTENCES>();
+                SYSCONTEXT.SENTENCESLIST = sqlite.Query<SENTENCES, COMMANDS, MODULES, SENTENCES>(sql, (sentence, command, module) => { command.MODULE = module; sentence.CMD = command; return sentence; }).ToList<SENTENCES>();
             }
             return SYSCONTEXT;
         }

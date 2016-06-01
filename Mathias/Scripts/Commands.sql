@@ -2,6 +2,7 @@
 (
 	ID INTEGER PRIMARY KEY AUTOINCREMENT,
 	CMD text NOT NULL,
+	FULLTYPEOBJECT text not null,
 	MODULENAME text not null
 );
 

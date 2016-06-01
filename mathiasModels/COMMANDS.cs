@@ -11,6 +11,7 @@ namespace mathiasModels
         public int ID { get; set; }
         public String CMD { get; set; }
         private String MODULENAME { get; set; }
+        public String FULLTYPEOBJECT { get; set; }
         public MODULES MODULE { get; set; } 
     }
 }

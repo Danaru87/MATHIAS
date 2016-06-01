@@ -1,6 +1,6 @@
 ﻿using mathiasModels.Xtend;
 
-namespace EmailPlug
+namespace mathiasModels.Xtend
 {
     public interface IPlugin
     {

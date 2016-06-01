@@ -167,8 +167,20 @@ namespace mathiasCore
                 }
                 else
                 {
+                    /* TEST */
+                    // Chargement de la DLL
                     string DLLPATH = cmd.CMD.MODULE.DLL;
                     var DLL = Assembly.LoadFile(DLLPATH);
+
+                    // Récupération de l'objet à utiliser
+                    var typeFromPlug = DLL.GetType("DLL.ImapProvider");
+                    var plug = Activator.CreateInstance(typeFromPlug);
+
+                    // Récupération de la méthode
+                    var method = typeFromPlug.GetMethod("DoAction");
+
+                    //Execution de la méthode et retour du cast
+                    return (PlugResponse) method.Invoke(plug, new object[] { call });
                 }
                 
                 response = new PlugResponse();

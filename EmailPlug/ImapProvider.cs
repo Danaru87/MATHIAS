@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 using AE.Net.Mail;
 using MoreLinq;
 using mathiasModels.Xtend;
+using System.Reflection;
 
 namespace EmailPlug
 {
-    class ImapProvider : MailProvider
+    class ImapProvider: IPlugin
     {
         #region PROPERTIES
+        public bool CONNECTED { get; set; }
+        public Dictionary<String, String> CFG { get; set; }
         private ImapClient CLIENT { get; set; }
         public Int32 PORT { get; }
         public String HOST { get; }
@@ -53,7 +56,7 @@ namespace EmailPlug
             return RESPONSE;
         }
 
-        public override PlugResponse DoAction(PlugCall Call)
+        public PlugResponse DoAction(PlugCall Call)
         {
 
                 switch (Call.ACTION)
@@ -65,13 +68,13 @@ namespace EmailPlug
                 }
         }
 
-        public override void Install()
+        public void Install()
         {
             
             throw new NotImplementedException();
         }
 
-        public override void Init()
+        public void Init()
         {
             throw new NotImplementedException();
         }

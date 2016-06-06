@@ -109,7 +109,7 @@ namespace Mathias
             
 
             const double ConfidenceThreshold = 0.70;
-            
+
             if (e.Result.Confidence >= ConfidenceThreshold && !LastAction.Equals(e.Result.Semantics.Value.ToString()))
             {
                 if (GlobalManager.STANDBY == false)

@@ -170,11 +170,12 @@ namespace mathiasCore
                     /* TEST */
                     // Chargement de la DLL
                     string DLLPATH = cmd.CMD.MODULE.DLL;
-                    var DLL = Assembly.LoadFile(DLLPATH);
-
+                    List<Assembly> assemblies = new List<Assembly>();
+                    Assembly DLL = Assembly.LoadFrom(@"C:\Users\adasilva\Documents\Visual Studio 2015\Projects\MATHIAS\Mathias\bin\Debug\plugins\EmailPlug.dll");
+                    
                     // Récupération de l'objet à utiliser
-                    var typeFromPlug = DLL.GetType("DLL.ImapProvider");
-                    var plug = Activator.CreateInstance(typeFromPlug);
+                    var typeFromPlug = DLL.GetType(cmd.CMD.FULLTYPEOBJECT);
+                    var plug = Activator.CreateInstance(typeFromPlug, new object[] { "imap.gmail.com", "dasilva.arnaud@gmail.com", "6ot04obb", 993 });
 
                     // Récupération de la méthode
                     var method = typeFromPlug.GetMethod("DoAction");

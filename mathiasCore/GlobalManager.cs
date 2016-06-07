@@ -175,7 +175,7 @@ namespace mathiasCore
                     
                     // Récupération de l'objet à utiliser
                     var typeFromPlug = DLL.GetType(cmd.CMD.FULLTYPEOBJECT);
-                    var plug = Activator.CreateInstance(typeFromPlug, new object[] { "imap.gmail.com", "dasilva.arnaud@gmail.com", "6ot04obb", 993 });
+                    var plug = Activator.CreateInstance(typeFromPlug, new object[] { "imap.gmail.com", "login", "password", 993 });
 
                     // Récupération de la méthode
                     var method = typeFromPlug.GetMethod("DoAction");
